@@ -20,6 +20,7 @@ def clean_data(df):
     df.drop(['categories'], axis=1, inplace=True)
     df = df.join(categories, lsuffix='_caller', rsuffix='_other')
     df = df[~df.duplicated(keep='first')]
+    df['related'] = df['related'].replace(2, 1)
     return df
 
 def save_data(df, database_filename):
