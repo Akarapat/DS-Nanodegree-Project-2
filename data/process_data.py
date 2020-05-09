@@ -4,12 +4,31 @@ import pandas as pd
 from sqlalchemy import create_engine
 
 def load_data(messages_filepath, categories_filepath):
+    '''
+    Load and merge data from two csv files
+    
+    Args:
+        messages_filepath: file path for disaster_messages.csv
+        categories_filepath: file path for disaster_categories.csv
+        
+    Returns:
+        combined dataset
+    '''
     messages = pd.read_csv(messages_filepath)
     categories = pd.read_csv(categories_filepath)
     df = messages.join(categories.set_index('id'), on='id')
     return df
 
 def clean_data(df):
+    '''
+    Clean data
+    
+    Args:
+        df: Pandas dataframe
+        
+    Returns:
+        Cleaned data
+    '''
     categories = df['categories'].str.split(';', expand=True)
     row = categories.iloc[0].tolist()
     category_colnames = [x.split('-')[0] for x in row]
@@ -24,11 +43,24 @@ def clean_data(df):
     return df
 
 def save_data(df, database_filename):
+    '''
+    Save data into sqlite database
+    
+    Args:
+        df: Pandas dataframe
+        database_filename: File name of database
+        
+    Returns:
+        None
+    '''
     engine = create_engine('sqlite:///' + database_filename)
     df.to_sql('messages', engine, index=False, if_exists='replace')
 
 
 def main():
+    '''
+    Function that will be called when process_data.py is executed
+    '''
     if len(sys.argv) == 4:
 
         messages_filepath, categories_filepath, database_filepath = sys.argv[1:]
